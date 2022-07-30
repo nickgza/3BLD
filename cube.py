@@ -1,7 +1,6 @@
 from enums import Colour as C, Face as F, Move
 from piece import Corner, Edge
 import numpy as np
-import string
 
 class Cube:
     pieces: np.ndarray
@@ -163,3 +162,153 @@ class Cube:
                     piece = piece.item()
                     if piece is not None: piece.change_orientation(move)
                 self.pieces[1] = np.rot90(self.pieces[1], 2)
+    
+    def get_edge_at_letter(self, letter: str) -> tuple[Edge, int]:
+        match letter:
+            case 'A':
+                piece = self.pieces[2, 0, 1]
+                return (piece, 0 if piece.orientation == F.U else 1)
+            case 'Q':
+                piece = self.pieces[2, 0, 1]
+                return (piece, 0 if piece.orientation == F.B else 1)
+            case 'B':
+                piece = self.pieces[1, 0, 2]
+                return (piece, 0 if piece.orientation == F.U else 1)
+            case 'M':
+                piece = self.pieces[1, 0, 2]
+                return (piece, 0 if piece.orientation == F.R else 1)
+            case 'C':
+                piece = self.pieces[0, 0, 1]
+                return (piece, 0 if piece.orientation == F.U else 1)
+            case 'I':
+                piece = self.pieces[0, 0, 1]
+                return (piece, 0 if piece.orientation == F.F else 1)
+            case 'D':
+                piece = self.pieces[1, 0, 0]
+                return (piece, 0 if piece.orientation == F.U else 1)
+            case 'E':
+                piece = self.pieces[1, 0, 0]
+                return (piece, 0 if piece.orientation == F.L else 1)
+            case 'L':
+                piece = self.pieces[0, 1, 0]
+                return (piece, 0 if piece.orientation == F.F else 1)
+            case 'F':
+                piece = self.pieces[0, 1, 0]
+                return (piece, 0 if piece.orientation == F.L else 1)
+            case 'J':
+                piece = self.pieces[0, 1, 2]
+                return (piece, 0 if piece.orientation == F.F else 1)
+            case 'P':
+                piece = self.pieces[0, 1, 2]
+                return (piece, 0 if piece.orientation == F.R else 1)
+            case 'T':
+                piece = self.pieces[2, 1, 2]
+                return (piece, 0 if piece.orientation == F.B else 1)
+            case 'N':
+                piece = self.pieces[2, 1, 2]
+                return (piece, 0 if piece.orientation == F.R else 1)
+            case 'R':
+                piece = self.pieces[2, 1, 0]
+                return (piece, 0 if piece.orientation == F.B else 1)
+            case 'H':
+                piece = self.pieces[2, 1, 0]
+                return (piece, 0 if piece.orientation == F.L else 1)
+            case 'U':
+                piece = self.pieces[0, 2, 1]
+                return (piece, 0 if piece.orientation == F.D else 1)
+            case 'K':
+                piece = self.pieces[0, 2, 1]
+                return (piece, 0 if piece.orientation == F.F else 1)
+            case 'V':
+                piece = self.pieces[1, 2, 2]
+                return (piece, 0 if piece.orientation == F.D else 1)
+            case 'O':
+                piece = self.pieces[1, 2, 2]
+                return (piece, 0 if piece.orientation == F.R else 1)
+            case 'W':
+                piece = self.pieces[2, 2, 1]
+                return (piece, 0 if piece.orientation == F.D else 1)
+            case 'S':
+                piece = self.pieces[2, 2, 1]
+                return (piece, 0 if piece.orientation == F.B else 1)
+            case 'X':
+                piece = self.pieces[1, 2, 0]
+                return (piece, 0 if piece.orientation == F.D else 1)
+            case 'G':
+                piece = self.pieces[1, 2, 0]
+                return (piece, 0 if piece.orientation == F.L else 1)
+                
+    def get_corner_at_letter(self, letter: str) -> tuple[Corner, int]:
+        match letter:
+            case 'A':
+                piece = self.pieces[2, 0, 0]
+                return (piece, 0 if piece.orientation == F.U else 1 if piece.orientation == F.B else 2)
+            case 'E':
+                piece = self.pieces[2, 0, 0]
+                return (piece, 0 if piece.orientation == F.L else 1 if piece.orientation == F.U else 2)
+            case 'R':
+                piece = self.pieces[2, 0, 0]
+                return (piece, 0 if piece.orientation == F.B else 1 if piece.orientation == F.L else 2)
+            case 'B':
+                piece = self.pieces[2, 0, 2]
+                return (piece, 0 if piece.orientation == F.U else 1 if piece.orientation == F.R else 2)
+            case 'Q':
+                piece = self.pieces[2, 0, 2]
+                return (piece, 0 if piece.orientation == F.B else 1 if piece.orientation == F.U else 2)
+            case 'N':
+                piece = self.pieces[2, 0, 2]
+                return (piece, 0 if piece.orientation == F.R else 1 if piece.orientation == F.B else 2)
+            case 'C':
+                piece = self.pieces[0, 0, 2]
+                return (piece, 0 if piece.orientation == F.U else 1 if piece.orientation == F.F else 2)
+            case 'M':
+                piece = self.pieces[0, 0, 2]
+                return (piece, 0 if piece.orientation == F.R else 1 if piece.orientation == F.U else 2)
+            case 'J':
+                piece = self.pieces[0, 0, 2]
+                return (piece, 0 if piece.orientation == F.F else 1 if piece.orientation == F.R else 2)
+            case 'D':
+                piece = self.pieces[0, 0, 0]
+                return (piece, 0 if piece.orientation == F.U else 1 if piece.orientation == F.L else 2)
+            case 'I':
+                piece = self.pieces[0, 0, 0]
+                return (piece, 0 if piece.orientation == F.F else 1 if piece.orientation == F.U else 2)
+            case 'F':
+                piece = self.pieces[0, 0, 0]
+                return (piece, 0 if piece.orientation == F.L else 1 if piece.orientation == F.F else 2)
+            case 'U':
+                piece = self.pieces[0, 2, 0]
+                return (piece, 0 if piece.orientation == F.D else 1 if piece.orientation == F.F else 2)
+            case 'G':
+                piece = self.pieces[0, 2, 0]
+                return (piece, 0 if piece.orientation == F.L else 1 if piece.orientation == F.D else 2)
+            case 'L':
+                piece = self.pieces[0, 2, 0]
+                return (piece, 0 if piece.orientation == F.F else 1 if piece.orientation == F.L else 2)
+            case 'V':
+                piece = self.pieces[0, 2, 2]
+                return (piece, 0 if piece.orientation == F.D else 1 if piece.orientation == F.R else 2)
+            case 'K':
+                piece = self.pieces[0, 2, 2]
+                return (piece, 0 if piece.orientation == F.F else 1 if piece.orientation == F.D else 2)
+            case 'P':
+                piece = self.pieces[0, 2, 2]
+                return (piece, 0 if piece.orientation == F.R else 1 if piece.orientation == F.F else 2)
+            case 'W':
+                piece = self.pieces[2, 2, 2]
+                return (piece, 0 if piece.orientation == F.D else 1 if piece.orientation == F.B else 2)
+            case 'O':
+                piece = self.pieces[2, 2, 2]
+                return (piece, 0 if piece.orientation == F.R else 1 if piece.orientation == F.D else 2)
+            case 'T':
+                piece = self.pieces[2, 2, 2]
+                return (piece, 0 if piece.orientation == F.B else 1 if piece.orientation == F.R else 2)
+            case 'X':
+                piece = self.pieces[2, 2, 0]
+                return (piece, 0 if piece.orientation == F.D else 1 if piece.orientation == F.L else 2)
+            case 'S':
+                piece = self.pieces[2, 2, 0]
+                return (piece, 0 if piece.orientation == F.B else 1 if piece.orientation == F.D else 2)
+            case 'H':
+                piece = self.pieces[2, 2, 0]
+                return (piece, 0 if piece.orientation == F.L else 1 if piece.orientation == F.B else 2)
