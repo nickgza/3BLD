@@ -4,6 +4,8 @@ class Piece:
     colours: list[Colour]
     orientation: Face
 
+    __match_args__ = ('colours',)
+
     def __init__(self, colours: list[Colour], orientation: Face):
         self.colours = colours
         self.orientation = orientation
@@ -13,6 +15,9 @@ class Piece:
 
     def __repr__(self):
         return str(self)
+    
+    def __eq__(self, other: 'Piece'):
+        return self.colours == other.colours
 
     def change_orientation(self, move: Move | str):
         match move:

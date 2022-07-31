@@ -21,6 +21,53 @@ class Cube:
     def __str__(self):
         return str(self.pieces)
     
+    def get_letter(self, tup: tuple[Corner | Edge, int]) -> str:
+        piece, orientation = tup
+        if isinstance(piece, Corner):
+            match piece:
+                case Corner([C.WHITE, C.ORANGE, C.BLUE]):
+                    return 'A' if orientation == 0 else 'E' if orientation == 1 else 'R'
+                case Corner([C.WHITE, C.BLUE, C.RED]):
+                    return 'B' if orientation == 0 else 'Q' if orientation == 1 else 'N'
+                case Corner([C.WHITE, C.RED, C.GREEN]):
+                    return 'C' if orientation == 0 else 'M' if orientation == 1 else 'J'
+                case Corner([C.WHITE, C.GREEN, C.ORANGE]):
+                    return 'D' if orientation == 0 else 'I' if orientation == 1 else 'F'
+                case Corner([C.YELLOW, C.ORANGE, C.GREEN]):
+                    return 'U' if orientation == 0 else 'G' if orientation == 1 else 'L'
+                case Corner([C.YELLOW, C.GREEN, C.RED]):
+                    return 'V' if orientation == 0 else 'K' if orientation == 1 else 'P'
+                case Corner([C.YELLOW, C.RED, C.BLUE]):
+                    return 'W' if orientation == 0 else 'O' if orientation == 1 else 'T'
+                case Corner([C.YELLOW, C.BLUE, C.ORANGE]):
+                    return 'X' if orientation == 0 else 'S' if orientation == 1 else 'H'
+        elif isinstance(piece, Edge):
+            match piece:
+                case Edge([C.WHITE, C.BLUE]):
+                    return 'A' if orientation == 0 else 'Q'
+                case Edge([C.WHITE, C.RED]):
+                    return 'B' if orientation == 0 else 'M'
+                case Edge([C.WHITE, C.GREEN]):
+                    return 'C' if orientation == 0 else 'I'
+                case Edge([C.WHITE, C.ORANGE]):
+                    return 'D' if orientation == 0 else 'E'
+                case Edge([C.GREEN, C.ORANGE]):
+                    return 'L' if orientation == 0 else 'F'
+                case Edge([C.GREEN, C.RED]):
+                    return 'J' if orientation == 0 else 'P'
+                case Edge([C.BLUE, C.RED]):
+                    return 'T' if orientation == 0 else 'N'
+                case Edge([C.BLUE, C.ORANGE]):
+                    return 'R' if orientation == 0 else 'H'
+                case Edge([C.YELLOW, C.GREEN]):
+                    return 'U' if orientation == 0 else 'K'
+                case Edge([C.YELLOW, C.RED]):
+                    return 'V' if orientation == 0 else 'O'
+                case Edge([C.YELLOW, C.BLUE]):
+                    return 'W' if orientation == 0 else 'S'
+                case Edge([C.YELLOW, C.ORANGE]):
+                    return 'X' if orientation == 0 else 'G'
+    
     def make_moves(self, moves: str):
         for move in moves.split():
             self.make_move(move)
@@ -163,7 +210,7 @@ class Cube:
                     if piece is not None: piece.change_orientation(move)
                 self.pieces[1] = np.rot90(self.pieces[1], 2)
     
-    def get_edge_at_letter(self, letter: str) -> tuple[Edge, int]:
+    def get_edge(self, letter: str) -> tuple[Edge, int]:
         match letter:
             case 'A':
                 piece = self.pieces[2, 0, 1]
@@ -238,7 +285,7 @@ class Cube:
                 piece = self.pieces[1, 2, 0]
                 return (piece, 0 if piece.orientation == F.L else 1)
                 
-    def get_corner_at_letter(self, letter: str) -> tuple[Corner, int]:
+    def get_corner(self, letter: str) -> tuple[Corner, int]:
         match letter:
             case 'A':
                 piece = self.pieces[2, 0, 0]
