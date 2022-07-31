@@ -5,73 +5,131 @@ import numpy as np
 class Cube:
     pieces: np.ndarray
 
+    POCHMANN_CORNERS_ALGORITHM: str = "R U' R' U' R U R' F' R U R' U' R' F R"
+
+    SOLVED_CUBE = np.array([
+        [[Corner((C.WHITE, C.GREEN, C.ORANGE), F.U) , Edge((C.WHITE, C.GREEN), F.U) , Corner((C.WHITE, C.RED, C.GREEN), F.U)],
+         [Edge((C.GREEN, C.ORANGE), F.F)            , None                          , Edge((C.GREEN, C.RED), F.F)],
+         [Corner((C.YELLOW, C.ORANGE, C.GREEN), F.D), Edge((C.YELLOW, C.GREEN), F.D), Corner((C.YELLOW, C.GREEN, C.RED), F.D)]],
+        [[Edge((C.WHITE, C.ORANGE), F.U)            , None                          , Edge((C.WHITE, C.RED), F.U)],
+         [None                                      , None                          , None],
+         [Edge((C.YELLOW, C.ORANGE), F.D)           , None                          , Edge((C.YELLOW, C.RED), F.D)]],
+        [[Corner((C.WHITE, C.ORANGE, C.BLUE), F.U)  , Edge((C.WHITE, C.BLUE), F.U)  , Corner((C.WHITE, C.BLUE, C.RED), F.U)],
+         [Edge((C.BLUE, C.ORANGE), F.B)             , None                          , Edge((C.BLUE, C.RED), F.B)],
+         [Corner((C.YELLOW, C.BLUE, C.ORANGE), F.D) , Edge((C.YELLOW, C.BLUE), F.D) , Corner((C.YELLOW, C.RED, C.BLUE), F.D)]]
+    ])
+
     def __init__(self):
-        self.pieces = np.array([
-            [[Corner([C.WHITE, C.GREEN, C.ORANGE], F.U) , Edge([C.WHITE, C.GREEN], F.U) , Corner([C.WHITE, C.RED, C.GREEN], F.U)],
-             [Edge([C.GREEN, C.ORANGE], F.F)            , None                          , Edge([C.GREEN, C.RED], F.F)],
-             [Corner([C.YELLOW, C.ORANGE, C.GREEN], F.D), Edge([C.YELLOW, C.GREEN], F.D), Corner([C.YELLOW, C.GREEN, C.RED], F.D)]],
-            [[Edge([C.WHITE, C.ORANGE], F.U)            , None                          , Edge([C.WHITE, C.RED], F.U)],
-             [None                                      , None                          , None],
-             [Edge([C.YELLOW, C.ORANGE], F.D)           , None                          , Edge([C.YELLOW, C.RED], F.D)]],
-            [[Corner([C.WHITE, C.ORANGE, C.BLUE], F.U)  , Edge([C.WHITE, C.BLUE], F.U)  , Corner([C.WHITE, C.BLUE, C.RED], F.U)],
-             [Edge([C.BLUE, C.ORANGE], F.B)             , None                          , Edge([C.BLUE, C.RED], F.B)],
-             [Corner([C.YELLOW, C.BLUE, C.ORANGE], F.D) , Edge([C.YELLOW, C.BLUE], F.D) , Corner([C.YELLOW, C.RED, C.BLUE], F.D)]]
-        ])
-    
+        self.pieces = self.SOLVED_CUBE
+
+    def pochmann_corners(self, new_cycle_order: str = 'VJBUWXI') -> str:
+        '''Returns the sequence of letters for corners. New cycles are searched for in order of new_cycle_order'''
+        letters: list[str] = []
+
+        unsolved = {Corner((C.WHITE, C.GREEN, C.ORANGE)),
+                    Corner((C.WHITE, C.RED, C.GREEN)),
+                    Corner((C.YELLOW, C.ORANGE, C.GREEN)),
+                    Corner((C.YELLOW, C.GREEN, C.RED)),
+                    Corner((C.WHITE, C.ORANGE, C.BLUE)),
+                    Corner((C.WHITE, C.BLUE, C.RED)),
+                    Corner((C.YELLOW, C.BLUE, C.ORANGE)),
+                    Corner((C.YELLOW, C.RED, C.BLUE))}
+        
+        start_piece, _ = self.get_corner('E')
+        current_piece, current_orientation = self.get_corner('E')
+
+        while True:
+            next_letter = self.get_letter(current_piece, current_orientation)
+            next_piece, next_orientation = self.get_corner(next_letter)
+
+            if next_piece != start_piece:
+                letters.append(next_letter)
+                unsolved.remove(next_piece)
+                current_piece, current_orientation = next_piece, next_orientation
+            else:
+                if current_piece != Corner((C.WHITE, C.ORANGE, C.BLUE)):
+                    letters.append(next_letter)
+                unsolved.remove(start_piece)
+
+                # find new cycle
+                for letter in new_cycle_order:
+                    piece, orientation = self.get_corner(letter)
+                    
+                    # check if piece was solved by previous cycle
+                    if piece not in unsolved:
+                        continue
+                    
+                    # check if piece is already correct
+                    match letter:
+                        case 'A':
+                            if piece == Corner((C.WHITE, C.ORANGE, C.BLUE)) and orientation == 0: continue
+                        case 'E':
+                            if piece == Corner((C.WHITE, C.ORANGE, C.BLUE)) and orientation == 1: continue
+                        case 'R':
+                            if piece == Corner((C.WHITE, C.ORANGE, C.BLUE)) and orientation == 2: continue
+                        case 'B':
+                            if piece == Corner((C.WHITE, C.BLUE, C. RED)) and orientation == 0: continue
+                        case 'Q':
+                            if piece == Corner((C.WHITE, C.BLUE, C. RED)) and orientation == 1: continue
+                        case 'N':
+                            if piece == Corner((C.WHITE, C.BLUE, C. RED)) and orientation == 2: continue
+                        case 'C':
+                            if piece == Corner((C.WHITE, C.RED, C.GREEN)) and orientation == 0: continue
+                        case 'M':
+                            if piece == Corner((C.WHITE, C.RED, C.GREEN)) and orientation == 1: continue
+                        case 'J':
+                            if piece == Corner((C.WHITE, C.RED, C.GREEN)) and orientation == 2: continue
+                        case 'D':
+                            if piece == Corner((C.WHITE, C.GREEN, C.ORANGE)) and orientation == 0: continue
+                        case 'I':
+                            if piece == Corner((C.WHITE, C.GREEN, C.ORANGE)) and orientation == 1: continue
+                        case 'F':
+                            if piece == Corner((C.WHITE, C.GREEN, C.ORANGE)) and orientation == 2: continue
+                        case 'U':
+                            if piece == Corner((C.YELLOW, C.ORANGE, C.GREEN)) and orientation == 0: continue
+                        case 'G':
+                            if piece == Corner((C.YELLOW, C.ORANGE, C.GREEN)) and orientation == 1: continue
+                        case 'L':
+                            if piece == Corner((C.YELLOW, C.ORANGE, C.GREEN)) and orientation == 2: continue
+                        case 'V':
+                            if piece == Corner((C.YELLOW, C.GREEN, C.RED)) and orientation == 0: continue
+                        case 'K':
+                            if piece == Corner((C.YELLOW, C.GREEN, C.RED)) and orientation == 1: continue
+                        case 'P':
+                            if piece == Corner((C.YELLOW, C.GREEN, C.RED)) and orientation == 2: continue
+                        case 'W':
+                            if piece == Corner((C.YELLOW, C.RED, C.BLUE)) and orientation == 0: continue
+                        case 'O':
+                            if piece == Corner((C.YELLOW, C.RED, C.BLUE)) and orientation == 1: continue
+                        case 'T':
+                            if piece == Corner((C.YELLOW, C.RED, C.BLUE)) and orientation == 2: continue
+                        case 'X':
+                            if piece == Corner((C.YELLOW, C.BLUE, C.ORANGE)) and orientation == 0: continue
+                        case 'S':
+                            if piece == Corner((C.YELLOW, C.BLUE, C.ORANGE)) and orientation == 1: continue
+                        case 'H':
+                            if piece == Corner((C.YELLOW, C.BLUE, C.ORANGE)) and orientation == 2: continue
+                        
+                    # start cycle from this letter
+                    letters.append(letter)
+                    start_piece = piece
+                    current_piece, current_orientation = piece, orientation
+                    break
+                else:
+                    # if no new cycles can be started, algorithm is done
+                    break
+        
+        return ''.join(letters)
+        
+
     def __str__(self):
         return str(self.pieces)
-    
-    def get_letter(self, tup: tuple[Corner | Edge, int]) -> str:
-        piece, orientation = tup
-        if isinstance(piece, Corner):
-            match piece:
-                case Corner([C.WHITE, C.ORANGE, C.BLUE]):
-                    return 'A' if orientation == 0 else 'E' if orientation == 1 else 'R'
-                case Corner([C.WHITE, C.BLUE, C.RED]):
-                    return 'B' if orientation == 0 else 'Q' if orientation == 1 else 'N'
-                case Corner([C.WHITE, C.RED, C.GREEN]):
-                    return 'C' if orientation == 0 else 'M' if orientation == 1 else 'J'
-                case Corner([C.WHITE, C.GREEN, C.ORANGE]):
-                    return 'D' if orientation == 0 else 'I' if orientation == 1 else 'F'
-                case Corner([C.YELLOW, C.ORANGE, C.GREEN]):
-                    return 'U' if orientation == 0 else 'G' if orientation == 1 else 'L'
-                case Corner([C.YELLOW, C.GREEN, C.RED]):
-                    return 'V' if orientation == 0 else 'K' if orientation == 1 else 'P'
-                case Corner([C.YELLOW, C.RED, C.BLUE]):
-                    return 'W' if orientation == 0 else 'O' if orientation == 1 else 'T'
-                case Corner([C.YELLOW, C.BLUE, C.ORANGE]):
-                    return 'X' if orientation == 0 else 'S' if orientation == 1 else 'H'
-        elif isinstance(piece, Edge):
-            match piece:
-                case Edge([C.WHITE, C.BLUE]):
-                    return 'A' if orientation == 0 else 'Q'
-                case Edge([C.WHITE, C.RED]):
-                    return 'B' if orientation == 0 else 'M'
-                case Edge([C.WHITE, C.GREEN]):
-                    return 'C' if orientation == 0 else 'I'
-                case Edge([C.WHITE, C.ORANGE]):
-                    return 'D' if orientation == 0 else 'E'
-                case Edge([C.GREEN, C.ORANGE]):
-                    return 'L' if orientation == 0 else 'F'
-                case Edge([C.GREEN, C.RED]):
-                    return 'J' if orientation == 0 else 'P'
-                case Edge([C.BLUE, C.RED]):
-                    return 'T' if orientation == 0 else 'N'
-                case Edge([C.BLUE, C.ORANGE]):
-                    return 'R' if orientation == 0 else 'H'
-                case Edge([C.YELLOW, C.GREEN]):
-                    return 'U' if orientation == 0 else 'K'
-                case Edge([C.YELLOW, C.RED]):
-                    return 'V' if orientation == 0 else 'O'
-                case Edge([C.YELLOW, C.BLUE]):
-                    return 'W' if orientation == 0 else 'S'
-                case Edge([C.YELLOW, C.ORANGE]):
-                    return 'X' if orientation == 0 else 'G'
-    
+
     def make_moves(self, moves: str):
+        '''Space separated sequence of moves'''
         for move in moves.split():
             self.make_move(move)
-    
+
     def make_move(self, move: Move | str):
         match move:
             case Move.U | "U":
@@ -209,8 +267,9 @@ class Cube:
                     piece = piece.item()
                     if piece is not None: piece.change_orientation(move)
                 self.pieces[1] = np.rot90(self.pieces[1], 2)
-    
+
     def get_edge(self, letter: str) -> tuple[Edge, int]:
+        '''Given a letter, returns what edge is at the letter and with what orientation'''
         match letter:
             case 'A':
                 piece = self.pieces[2, 0, 1]
@@ -284,8 +343,9 @@ class Cube:
             case 'G':
                 piece = self.pieces[1, 2, 0]
                 return (piece, 0 if piece.orientation == F.L else 1)
-                
+
     def get_corner(self, letter: str) -> tuple[Corner, int]:
+        '''Given a letter, returns what corner is at the letter and with what orientation'''
         match letter:
             case 'A':
                 piece = self.pieces[2, 0, 0]
@@ -359,3 +419,57 @@ class Cube:
             case 'H':
                 piece = self.pieces[2, 2, 0]
                 return (piece, 0 if piece.orientation == F.L else 1 if piece.orientation == F.B else 2)
+
+    def get_letter(self, *args: tuple[Corner | Edge, int] | tuple[tuple[Corner | Edge, int]]) -> str:
+        '''Given a piece and orientation, returns the letter that the sticker should be at'''
+        if len(args) == 1:
+            piece, orientation = args[0]
+        elif len(args) == 2:
+            piece, orientation = args
+        else:
+            raise ValueError
+        
+        if isinstance(piece, Corner):
+            match piece:
+                case Corner((C.WHITE, C.ORANGE, C.BLUE)):
+                    return 'A' if orientation == 0 else 'E' if orientation == 1 else 'R'
+                case Corner((C.WHITE, C.BLUE, C.RED)):
+                    return 'B' if orientation == 0 else 'Q' if orientation == 1 else 'N'
+                case Corner((C.WHITE, C.RED, C.GREEN)):
+                    return 'C' if orientation == 0 else 'M' if orientation == 1 else 'J'
+                case Corner((C.WHITE, C.GREEN, C.ORANGE)):
+                    return 'D' if orientation == 0 else 'I' if orientation == 1 else 'F'
+                case Corner((C.YELLOW, C.ORANGE, C.GREEN)):
+                    return 'U' if orientation == 0 else 'G' if orientation == 1 else 'L'
+                case Corner((C.YELLOW, C.GREEN, C.RED)):
+                    return 'V' if orientation == 0 else 'K' if orientation == 1 else 'P'
+                case Corner((C.YELLOW, C.RED, C.BLUE)):
+                    return 'W' if orientation == 0 else 'O' if orientation == 1 else 'T'
+                case Corner((C.YELLOW, C.BLUE, C.ORANGE)):
+                    return 'X' if orientation == 0 else 'S' if orientation == 1 else 'H'
+        elif isinstance(piece, Edge):
+            match piece:
+                case Edge((C.WHITE, C.BLUE)):
+                    return 'A' if orientation == 0 else 'Q'
+                case Edge((C.WHITE, C.RED)):
+                    return 'B' if orientation == 0 else 'M'
+                case Edge((C.WHITE, C.GREEN)):
+                    return 'C' if orientation == 0 else 'I'
+                case Edge((C.WHITE, C.ORANGE)):
+                    return 'D' if orientation == 0 else 'E'
+                case Edge((C.GREEN, C.ORANGE)):
+                    return 'L' if orientation == 0 else 'F'
+                case Edge((C.GREEN, C.RED)):
+                    return 'J' if orientation == 0 else 'P'
+                case Edge((C.BLUE, C.RED)):
+                    return 'T' if orientation == 0 else 'N'
+                case Edge((C.BLUE, C.ORANGE)):
+                    return 'R' if orientation == 0 else 'H'
+                case Edge((C.YELLOW, C.GREEN)):
+                    return 'U' if orientation == 0 else 'K'
+                case Edge((C.YELLOW, C.RED)):
+                    return 'V' if orientation == 0 else 'O'
+                case Edge((C.YELLOW, C.BLUE)):
+                    return 'W' if orientation == 0 else 'S'
+                case Edge((C.YELLOW, C.ORANGE)):
+                    return 'X' if orientation == 0 else 'G'

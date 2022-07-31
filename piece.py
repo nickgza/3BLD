@@ -1,12 +1,12 @@
 from enums import Colour, Face, Move
 
 class Piece:
-    colours: list[Colour]
+    colours: tuple[Colour]
     orientation: Face
 
     __match_args__ = ('colours',)
 
-    def __init__(self, colours: list[Colour], orientation: Face):
+    def __init__(self, colours: tuple[Colour], orientation: Face):
         self.colours = colours
         self.orientation = orientation
 
@@ -18,6 +18,9 @@ class Piece:
     
     def __eq__(self, other: 'Piece'):
         return self.colours == other.colours
+    
+    def __hash__(self):
+        return hash(self.colours)
 
     def change_orientation(self, move: Move | str):
         match move:
@@ -77,11 +80,11 @@ class Piece:
                     case Face.L: self.orientation = Face.R
 
 class Corner(Piece):
-    def __init__(self, colours: list[Colour], orientation: Face):
+    def __init__(self, colours: tuple[Colour], orientation: Face = None):
         assert len(colours) == 3
         super().__init__(colours, orientation)
 
 class Edge(Piece):
-    def __init__(self, colours: list[Colour], orientation: Face):
+    def __init__(self, colours: tuple[Colour], orientation: Face = None):
         assert len(colours) == 2
         super().__init__(colours, orientation)
