@@ -35,8 +35,8 @@ class Cube:
                     Corner((C.YELLOW, C.BLUE, C.ORANGE)),
                     Corner((C.YELLOW, C.RED, C.BLUE))}
         
-        start_piece, _ = self.get_corner('E')
         current_piece, current_orientation = self.get_corner('E')
+        start_piece = current_piece
 
         while True:
             next_letter = self.get_letter(current_piece, current_orientation)
@@ -47,7 +47,7 @@ class Cube:
                 unsolved.remove(next_piece)
                 current_piece, current_orientation = next_piece, next_orientation
             else:
-                if current_piece != Corner((C.WHITE, C.ORANGE, C.BLUE)):
+                if current_piece != Corner((C.WHITE, C.ORANGE, C.BLUE)): # buffer piece
                     letters.append(next_letter)
                 unsolved.remove(start_piece)
 
@@ -120,7 +120,109 @@ class Cube:
                     break
         
         return ''.join(letters)
+
+    def M2_edges(self, new_cycle_order: str = 'ACWLJRTXVDB') -> str:
+        '''Returns the sequence of letters for edges. New cycles are searched for in order of new_cycle_order'''
+        letters: list[str] = []
+
+        unsolved = {Edge((C.WHITE, C.GREEN)),
+                    Edge((C.WHITE, C.RED)),
+                    Edge((C.WHITE, C.BLUE)),
+                    Edge((C.WHITE, C.ORANGE)),
+                    Edge((C.GREEN, C.ORANGE)),
+                    Edge((C.GREEN, C.RED)),
+                    Edge((C.BLUE, C.RED)),
+                    Edge((C.BLUE, C.ORANGE)),
+                    Edge((C.YELLOW, C.GREEN)),
+                    Edge((C.YELLOW, C.RED)),
+                    Edge((C.YELLOW, C.BLUE)),
+                    Edge((C.YELLOW, C.ORANGE))}
         
+        current_piece, current_orientation = self.get_edge('U')
+        start_piece = current_piece
+
+        while True:
+            next_letter = self.get_letter(current_piece, current_orientation)
+            next_piece, next_orientation = self.get_edge(next_letter)
+
+            if next_piece != start_piece:
+                letters.append(next_letter)
+                unsolved.remove(next_piece)
+                current_piece, current_orientation = next_piece, next_orientation
+            else:
+                if current_piece != Edge((C.YELLOW, C.GREEN)): # buffer piece
+                    letters.append(next_letter)
+                unsolved.remove(start_piece)
+
+                # find new cycle
+                for letter in new_cycle_order:
+                    piece, orientation = self.get_edge(letter)
+                    
+                    # check if piece was solved by previous cycle
+                    if piece not in unsolved:
+                        continue
+                    
+                    # check if piece is already correct
+                    match letter:
+                        case 'A':
+                            if piece == Edge((C.WHITE, C.BLUE)) and orientation == 0: continue
+                        case 'Q':
+                            if piece == Edge((C.WHITE, C.BLUE)) and orientation == 1: continue
+                        case 'B':
+                            if piece == Edge((C.WHITE, C.RED)) and orientation == 0: continue
+                        case 'M':
+                            if piece == Edge((C.WHITE, C.RED)) and orientation == 1: continue
+                        case 'C':
+                            if piece == Edge((C.WHITE, C.GREEN)) and orientation == 0: continue
+                        case 'I':
+                            if piece == Edge((C.WHITE, C.GREEN)) and orientation == 1: continue
+                        case 'D':
+                            if piece == Edge((C.WHITE, C.ORANGE)) and orientation == 0: continue
+                        case 'E':
+                            if piece == Edge((C.WHITE, C.ORANGE)) and orientation == 1: continue
+                        case 'L':
+                            if piece == Edge((C.GREEN, C.ORANGE)) and orientation == 0: continue
+                        case 'F':
+                            if piece == Edge((C.GREEN, C.ORANGE)) and orientation == 1: continue
+                        case 'J':
+                            if piece == Edge((C.GREEN, C.RED)) and orientation == 0: continue
+                        case 'P':
+                            if piece == Edge((C.GREEN, C.RED)) and orientation == 1: continue
+                        case 'T':
+                            if piece == Edge((C.BLUE, C.RED)) and orientation == 0: continue
+                        case 'N':
+                            if piece == Edge((C.BLUE, C.RED)) and orientation == 1: continue
+                        case 'R':
+                            if piece == Edge((C.BLUE, C.ORANGE)) and orientation == 0: continue
+                        case 'H':
+                            if piece == Edge((C.BLUE, C.ORANGE)) and orientation == 1: continue
+                        case 'U':
+                            if piece == Edge((C.YELLOW, C.GREEN)) and orientation == 0: continue
+                        case 'K':
+                            if piece == Edge((C.YELLOW, C.GREEN)) and orientation == 1: continue
+                        case 'V':
+                            if piece == Edge((C.YELLOW, C.RED)) and orientation == 0: continue
+                        case 'O':
+                            if piece == Edge((C.YELLOW, C.RED)) and orientation == 1: continue
+                        case 'W':
+                            if piece == Edge((C.YELLOW, C.BLUE)) and orientation == 0: continue
+                        case 'S':
+                            if piece == Edge((C.YELLOW, C.BLUE)) and orientation == 1: continue
+                        case 'X':
+                            if piece == Edge((C.YELLOW, C.ORANGE)) and orientation == 0: continue
+                        case 'G':
+                            if piece == Edge((C.YELLOW, C.ORANGE)) and orientation == 1: continue
+                        
+                    # start cycle from this letter
+                    letters.append(letter)
+                    start_piece = piece
+                    current_piece, current_orientation = piece, orientation
+                    break
+                else:
+                    # if no new cycles can be started, algorithm is done
+                    break
+        
+        return ''.join(letters)
 
     def __str__(self):
         return str(self.pieces)
