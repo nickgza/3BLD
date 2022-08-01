@@ -1,11 +1,13 @@
 from enums import Colour as C, Face as F, Move
 from piece import Corner, Edge
 import numpy as np
+import random
 
 class Cube:
     pieces: np.ndarray
 
     POCHMANN_CORNERS_ALGORITHM: str = "R U' R' U' R U R' F' R U R' U' R' F R"
+    M2_EDGES_ALGORITHM: str = "M2"
 
     SOLVED_CUBE = np.array([
         [[Corner((C.WHITE, C.GREEN, C.ORANGE), F.U) , Edge((C.WHITE, C.GREEN), F.U) , Corner((C.WHITE, C.RED, C.GREEN), F.U)],
@@ -21,6 +23,18 @@ class Cube:
 
     def __init__(self):
         self.pieces = self.SOLVED_CUBE
+    
+    def generate_scramble(self, length=15) -> str:
+        moves = ["U", "U'", "U2", "D", "D'", "D2", "L", "L'", "L2", "R", "R'", "R2", "F", "F'", "F2", "B", "B'", "B2"]
+        scramble = []
+
+        while len(scramble) < length:
+            move = random.choice(moves)
+            if scramble and scramble[-1][0] == move[0]:
+                continue
+            scramble.append(move)
+
+        return ' '.join(scramble)
 
     def pochmann_corners(self, new_cycle_order: str = 'VJBUWXI') -> str:
         '''Returns the sequence of letters for corners. New cycles are searched for in order of new_cycle_order'''

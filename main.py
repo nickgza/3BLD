@@ -4,8 +4,10 @@ import numpy as np
 
 test = Cube()
 
-scramble = "U2 B2 R' U2 R F2 B2 U2 R2 D' L' B' L F D R' L2 U B' L' D' R U F' B'"
+print(scramble := test.generate_scramble())
 
 test.make_moves(scramble)
-print(test.pochmann_corners())
-print(test.M2_edges())
+
+corners_letters, edges_letters = test.pochmann_corners(), test.M2_edges()
+print(' '.join(corners_letters[i:i+2] for i in range(0, len(corners_letters), 2)))
+print(' '.join(edges_letters[i:i+2] for i in range(0, len(edges_letters), 2)))
