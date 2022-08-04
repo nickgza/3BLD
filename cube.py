@@ -135,7 +135,7 @@ class Cube:
         
         return ''.join(letters)
 
-    def M2_edges(self, new_cycle_order: str = 'ACWLJRTXVDB') -> str:
+    def M2_edges(self, new_cycle_order: str = 'ACWLJRTXVDB', parity: bool = False) -> str:
         '''Returns the sequence of letters for edges. New cycles are searched for in order of new_cycle_order'''
         letters: list[str] = []
 
@@ -156,7 +156,7 @@ class Cube:
         start_piece = current_piece
 
         while True:
-            next_letter = self.get_letter(current_piece, current_orientation)
+            next_letter = self.get_letter(current_piece, current_orientation, M2_parity=parity)
             next_piece, next_orientation = self.get_edge(next_letter)
 
             if next_piece != start_piece:
@@ -179,9 +179,11 @@ class Cube:
                     # check if piece is already correct
                     match letter:
                         case 'A':
-                            if piece == Edge((C.WHITE, C.BLUE)) and orientation == 0: continue
+                            if not parity and piece == Edge((C.WHITE, C.BLUE)) and orientation == 0: continue
+                            if parity and piece == Edge((C.WHITE, C.ORANGE)) and orientation == 0: continue
                         case 'Q':
-                            if piece == Edge((C.WHITE, C.BLUE)) and orientation == 1: continue
+                            if not parity and piece == Edge((C.WHITE, C.BLUE)) and orientation == 1: continue
+                            if parity and piece == Edge((C.WHITE, C.ORANGE)) and orientation == 1: continue
                         case 'B':
                             if piece == Edge((C.WHITE, C.RED)) and orientation == 0: continue
                         case 'M':
@@ -191,9 +193,11 @@ class Cube:
                         case 'I':
                             if piece == Edge((C.WHITE, C.GREEN)) and orientation == 1: continue
                         case 'D':
-                            if piece == Edge((C.WHITE, C.ORANGE)) and orientation == 0: continue
+                            if not parity and piece == Edge((C.WHITE, C.ORANGE)) and orientation == 0: continue
+                            if parity and piece == Edge((C.WHITE, C.BLUE)) and orientation == 0: continue
                         case 'E':
-                            if piece == Edge((C.WHITE, C.ORANGE)) and orientation == 1: continue
+                            if not parity and piece == Edge((C.WHITE, C.ORANGE)) and orientation == 1: continue
+                            if parity and piece == Edge((C.WHITE, C.ORANGE)) and orientation == 1: continue
                         case 'L':
                             if piece == Edge((C.GREEN, C.ORANGE)) and orientation == 0: continue
                         case 'F':
@@ -536,7 +540,7 @@ class Cube:
                 piece = self.pieces[2, 2, 0]
                 return (piece, 0 if piece.orientation == F.L else 1 if piece.orientation == F.B else 2)
 
-    def get_letter(self, *args: tuple[Corner | Edge, int] | tuple[tuple[Corner | Edge, int]]) -> str:
+    def get_letter(self, *args: tuple[Corner | Edge, int] | tuple[tuple[Corner | Edge, int]], M2_parity: bool = False) -> str:
         '''Given a piece and orientation, returns the letter that the sticker should be at'''
         if len(args) == 1:
             piece, orientation = args[0]
@@ -566,13 +570,13 @@ class Cube:
         elif isinstance(piece, Edge):
             match piece:
                 case Edge((C.WHITE, C.BLUE)):
-                    return 'A' if orientation == 0 else 'Q'
+                    return ('A' if orientation == 0 else 'Q') if not M2_parity else ('D' if orientation == 0 else 'E')
                 case Edge((C.WHITE, C.RED)):
                     return 'B' if orientation == 0 else 'M'
                 case Edge((C.WHITE, C.GREEN)):
                     return 'C' if orientation == 0 else 'I'
                 case Edge((C.WHITE, C.ORANGE)):
-                    return 'D' if orientation == 0 else 'E'
+                    return ('D' if orientation == 0 else 'E') if not M2_parity else ('A' if orientation == 0 else 'Q')
                 case Edge((C.GREEN, C.ORANGE)):
                     return 'L' if orientation == 0 else 'F'
                 case Edge((C.GREEN, C.RED)):
