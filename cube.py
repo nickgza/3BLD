@@ -10,15 +10,15 @@ class Cube:
     M2_EDGES_ALGORITHM: str = "M2"
 
     SOLVED_CUBE = np.array([
-        [[Corner((C.WHITE, C.GREEN, C.ORANGE), F.U) , Edge((C.WHITE, C.GREEN), F.U) , Corner((C.WHITE, C.RED, C.GREEN), F.U)],
-         [Edge((C.GREEN, C.ORANGE), F.F)            , None                          , Edge((C.GREEN, C.RED), F.F)],
-         [Corner((C.YELLOW, C.ORANGE, C.GREEN), F.D), Edge((C.YELLOW, C.GREEN), F.D), Corner((C.YELLOW, C.GREEN, C.RED), F.D)]],
-        [[Edge((C.WHITE, C.ORANGE), F.U)            , None                          , Edge((C.WHITE, C.RED), F.U)],
-         [None                                      , None                          , None],
-         [Edge((C.YELLOW, C.ORANGE), F.D)           , None                          , Edge((C.YELLOW, C.RED), F.D)]],
-        [[Corner((C.WHITE, C.ORANGE, C.BLUE), F.U)  , Edge((C.WHITE, C.BLUE), F.U)  , Corner((C.WHITE, C.BLUE, C.RED), F.U)],
-         [Edge((C.BLUE, C.ORANGE), F.B)             , None                          , Edge((C.BLUE, C.RED), F.B)],
-         [Corner((C.YELLOW, C.BLUE, C.ORANGE), F.D) , Edge((C.YELLOW, C.BLUE), F.D) , Corner((C.YELLOW, C.RED, C.BLUE), F.D)]]
+        [[Corner((C.WHITE, C.GREEN, C.ORANGE), F.U, F.F) , Edge((C.WHITE, C.GREEN), F.U, F.F) , Corner((C.WHITE, C.RED, C.GREEN), F.U, F.R)],
+         [Edge((C.GREEN, C.ORANGE), F.F, F.L)            , None                               , Edge((C.GREEN, C.RED), F.F, F.R)],
+         [Corner((C.YELLOW, C.ORANGE, C.GREEN), F.D, F.L), Edge((C.YELLOW, C.GREEN), F.D, F.F), Corner((C.YELLOW, C.GREEN, C.RED), F.D, F.F)]],
+        [[Edge((C.WHITE, C.ORANGE), F.U, F.L)            , None                               , Edge((C.WHITE, C.RED), F.U, F.R)],
+         [None                                           , None                               , None],
+         [Edge((C.YELLOW, C.ORANGE), F.D, F.L)           , None                               , Edge((C.YELLOW, C.RED), F.D, F.R)]],
+        [[Corner((C.WHITE, C.ORANGE, C.BLUE), F.U, F.L)  , Edge((C.WHITE, C.BLUE), F.U, F.B)  , Corner((C.WHITE, C.BLUE, C.RED), F.U, F.B)],
+         [Edge((C.BLUE, C.ORANGE), F.B, F.L)             , None                               , Edge((C.BLUE, C.RED), F.B, F.R)],
+         [Corner((C.YELLOW, C.BLUE, C.ORANGE), F.D, F.B) , Edge((C.YELLOW, C.BLUE), F.D, F.B) , Corner((C.YELLOW, C.RED, C.BLUE), F.D, F.R)]]
     ])
 
     def __init__(self):

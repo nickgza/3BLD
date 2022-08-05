@@ -1,6 +1,4 @@
-from enums import Colour as C, Face as F, Move
 from cube import Cube
-import numpy as np
 
 test = Cube()
 
