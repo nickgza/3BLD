@@ -32,6 +32,10 @@ class Cube:
             move = random.choice(moves)
             if scramble and scramble[-1][0] == move[0]:
                 continue
+            if len(scramble) >= 2 and scramble[-2][0] == move[0] and scramble[-1][0] == {
+                'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L', 'F': 'B', 'B': 'F'
+            }[move[0]]:
+                continue
             scramble.append(move)
 
         return ' '.join(scramble)
